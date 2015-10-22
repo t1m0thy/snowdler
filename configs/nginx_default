@@ -1,8 +1,8 @@
 server {
-    listen   80;
-    server_name localhost atlantic.chem.harvard.edu;
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name localhost;
     # serve directly - analogous for static/staticfiles
-
 
     gzip  on;
     gzip_http_version 1.1;
@@ -16,10 +16,10 @@ server {
     gzip_disable "MSIE [1-6]\.(?!.*SV1)";
 
     location /favicon.ico
-    { alias /home/pi/snowdler/web/static/favicon.ico; }
+    { alias /home/pi/snowdler/snowdlerweb/static/favicon.ico; }
 
     location /static/ {
-        alias /home/pi/snowdler/web/static/;
+        alias /home/pi/snowdler/snowdlerweb/static/;
     }
 
     location / {
@@ -34,7 +34,6 @@ server {
         proxy_pass http://localhost:8080/;
 
         add_header 'Access-Control-Allow-Origin' '*';
-        # include /etc/nginx/sites-available/allow-only-me.conf;
         allow  all;
     }
 
