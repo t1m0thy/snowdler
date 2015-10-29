@@ -3,7 +3,6 @@ The software setup for the Junkfunnel Montana Data Transmitter Home Version
 
 Install steps
 
-#.
     sudo apt-get install nginx supervisor
     # then disable nginx in with systemd as we will control it with supervisor
 
@@ -19,7 +18,25 @@ systemd is the OS's init system that gets everything running.  Even though it ha
     sudo mkdir /var/log/gunicorn
     sudo chown pi /var/log/gunicorn
 
-#. hookup our supervisor config (symlink into etc)
+hookup our supervisor config (symlink into etc)
     sudo ln -s ~/snowdler/configs/supervisor-programs.conf /etc/supervisor/conf.d/supervisor-programs.conf
 
+Install the gpio python lib # I think this is already in by default
 
+    sudo apt-get install python3-rpi.gpio
+
+
+for the screen
+
+    git clone git://git.drogon.net/wiringPi
+    cd wiringPi
+    ./build
+
+test that with
+    ./build/gpio/gpio readall
+
+more installs
+    sudo pip3 install wiringpi2
+    sudo apt-get install python3-dev python3-pil
+
+    sudo pip3 install spidev
