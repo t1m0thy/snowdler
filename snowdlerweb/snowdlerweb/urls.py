@@ -19,5 +19,5 @@ import pinner.urls
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^gpio/', include(pinner.urls)),
+    url(r'^pinner/', include(pinner.urls)),
 ]
