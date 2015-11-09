@@ -18,6 +18,10 @@ systemd is the OS's init system that gets everything running.  Even though it ha
     sudo mkdir /var/log/gunicorn
     sudo chown pi /var/log/gunicorn
 
+    sudo mkdir /var/log/django
+    sudo chown pi /var/log/django
+
+
 hookup our supervisor config (symlink into etc)
     sudo ln -s ~/snowdler/configs/supervisor-programs.conf /etc/supervisor/conf.d/supervisor-programs.conf
 
@@ -26,7 +30,7 @@ Install the gpio python lib # I think this is already in by default
     sudo apt-get install python3-rpi.gpio
 
 
-for the screen
+## for the Nokia screen ##
 
     git clone git://git.drogon.net/wiringPi
     cd wiringPi
@@ -40,3 +44,15 @@ more installs
     sudo apt-get install python3-dev python3-pil
 
     sudo pip3 install spidev
+
+
+## Repair wifi dropout issue: ##
+    sudo nano /etc/modprobe.d/8192cu.conf
+
+and paste the following in
+    # Disable power saving
+    options 8192cu rtw_power_mgnt=0
+
+Then reboot with sudo reboot
+
+more info here: https://rtl8192cu.googlecode.com/hg/document/HowTo_enable_the_power_saving_functionality.pdf
