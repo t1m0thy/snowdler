@@ -13,7 +13,10 @@ import time ## Import 'time' library.  Allows us to use 'sleep'
 
 logger = logging.getLogger(__name__)
 
+FREQUENCY = 100
 PIN = 21
+
+PWM_OBJECTS = {}
 
 io.setmode(io.BCM) ## Use BOARD pin numbering
 
@@ -31,21 +34,40 @@ MODES = {"bcm": io.BCM,
 MODE_TO_STR = {io.BCM: "BCM",
                 io.BOARD: "BOARD"}
 
+def set_input(request, pin):
+    pin = int(pin)
+    if pin in PWM_OBJECTS:
+        del(PWM_OBJECTS[pin])
+    io.setup(pin, io.IN)
+    return HttpResponse("Pin {} set to INPUT".format(pin))
+
 def on(request, pin):
     pin = int(pin)
+    if pin in PWM_OBJECTS:
+        del(PWM_OBJECTS[pin])
     io.setup(pin, io.OUT) ## Setup GPIO pin PIN to OUT
     io.output(pin, True)
     return HttpResponse("Pin {} On".format(pin))
 
 def off(request, pin):
     pin = int(pin)
+    if pin in PWM_OBJECTS:
+        del(PWM_OBJECTS[pin])
     io.setup(pin, io.OUT) ## Setup GPIO pin PIN to OUT
     io.output(pin, False)
     return HttpResponse("Pin {} Off".format(pin))
 
 def pwm(request, pin, duty):
-    p = io.PWM(pin, 50)
-    p.start()
+    pin = int(pin)
+    duty = float(duty)
+    io.setup(pin, io.OUT) ## Setup GPIO pin PIN to OUT
+    if pin in PWM_OBJECTS:
+        PWM_OBJECTS[pin].ChangeDutyCycle(duty)
+    else:
+        p = io.PWM(pin, FREQUENCY)
+        p.start(duty)
+        PWM_OBJECTS[pin] = p
+    return HttpResponse("Pin {} at duty {}".format(pin, duty))
 
 def _handle_mode(request):
     """

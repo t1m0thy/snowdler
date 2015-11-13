@@ -61,3 +61,5 @@ target/
 *.sublime-workspace
 
 ._*
+snowdlerweb/static/
+*.DS_Store

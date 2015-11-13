@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Pinner main control{% endblock %}
+{% block nav %}<!-- no nav -->{% endblock %}
+{% block body %}
+<div class="container">
+
+<table class="table">
+<thead><th>{{mode}} #</th><th>Mode</th><th>State</th><th>Control</th></thead>
+<tbody>
+
+{% for pin in pin_states %}
+<tr>
+<td>{{ pin.number }}</td>
+<td>{% if not pin.is_serial %}
+    <input class="mode-switch" id="mode-{{pin.number}}" type="checkbox" name="pin-{{pin.number}}-mode" data-on-text="IN" data-off-text="OUT" {% if pin.mode == 'IN' %}checked{% endif %}>
+    {% else %}
+    {{ pin.mode }}
+    {% endif %}
+</td>
+<td>{{ pin.state }}</td>
+<td><input class="pwm-slider" id="value-{{ pin.number }}" data-slider-id='pin{{ pin.number }}slider' type="text" data-slider-min="{{pin.min}}" data-slider-max="{{pin.max}}" data-slider-step="1" data-slider-value="{{pin.value}}"/>
+
+</tr>
+{% endfor %}
+</div>
+</tbody>
+</table>
+
+{% endblock %}
+{% block footer %}
+{% endblock %}
+
+{% block extrascripts %}
+<script type="text/javascript">
+
+
+    $(".mode-switch").bootstrapSwitch()
+
+
+    // With JQuery
+    $('.pwm-slider').slider({
+        formatter: function(value) {
+            return 'Duty: ' + value + "%";
+        }})
+
+    $('.pwm-slider').on("slide", function (duty) {
+        var pin = parseInt(this.id.split("-")[1],10);
+        var duty = parseInt(this.value, 10);
+        $.ajax({
+                url: '/pinner/' + pin + '/pwm/' + duty,
+                tryCount : 0,
+                retryLimit : 2,
+                error : function(xhr, textStatus, errorThrown ) {
+                        if (xhr.status == 301) {
+                            this.tryCount++;
+                            if (this.tryCount <= this.retryLimit) {
+                                //try again
+                                $.ajax(this);
+                                return;
+                            }
+                            return;
+                        }  else {
+                            console.log("no love")
+                        }
+                    },
+                success: function(data) {
+                  console.log("pin" + pin + " at " + duty)
+
+            }
+
+        });
+    });
+
+
+</script>
+{% endblock %}
