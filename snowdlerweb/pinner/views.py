@@ -34,12 +34,26 @@ MODES = {"bcm": io.BCM,
 MODE_TO_STR = {io.BCM: "BCM",
                 io.BOARD: "BOARD"}
 
+def set_type(request, pin, type):
+    if type == "in":
+        return set_input(request, pin)
+    else:
+        return set_output(request, pin)
+
 def set_input(request, pin):
     pin = int(pin)
     if pin in PWM_OBJECTS:
         del(PWM_OBJECTS[pin])
     io.setup(pin, io.IN)
     return HttpResponse("Pin {} set to INPUT".format(pin))
+
+def set_output(request, pin):
+    pin = int(pin)
+    if pin in PWM_OBJECTS:
+        del(PWM_OBJECTS[pin])
+    io.setup(pin, io.OUT)
+    return HttpResponse("Pin {} set to OUTPUT".format(pin))
+
 
 def on(request, pin):
     pin = int(pin)
@@ -116,7 +130,7 @@ def index(request):
             else:
                 s = 'NA'
             pin_states.append(dict(number=i,
-                                    mode=LOOKUP[m],
+                                    type=LOOKUP[m],
                                     state=s,
                                     is_input=s==io.IN,
                                     is_serial=s not in [io.IN,io.OUT],

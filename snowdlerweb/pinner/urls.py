@@ -7,4 +7,6 @@ urlpatterns = [
     url(r'^(?P<pin>[0-9]+)/pwm/(?P<duty>[0-9]+)$', views.pwm, name='pwm'),
     url(r'^(?P<pin>[0-9]+)/on$', views.on, name='on'),
     url(r'^(?P<pin>[0-9]+)/off$', views.off, name='off'),
+    url(r'^(?P<pin>[0-9]+)/set_type/(?P<type>(in|out))$', views.set_type, name='set_type'),
+
 ]
