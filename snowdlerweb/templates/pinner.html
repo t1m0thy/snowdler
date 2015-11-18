@@ -11,19 +11,18 @@
 
 {% for pin in pin_states %}
 <tr>
-<td>{{ pin.number }}</td>
-<td>{% if not pin.is_serial %}
-    <input class="type-switch" id="type-{{pin.number}}" type="checkbox" name="pin-{{pin.number}}-type" data-on-text="IN" data-off-text="OUT" data-size='mini' {% if pin.type == 'IN' %}checked{% endif %}>
+<td class="col-xs-1">{{ pin.number }}</td>
+<td class="col-xs-1">{% if not pin.is_serial %}
+    <input class="type-switch hidden" id="type-{{pin.number}}" type="checkbox" name="pin-{{pin.number}}-type" data-on-text="IN" data-off-text="OUT" data-size='mini' {% if pin.type == 'IN' %}checked{% endif %}>
     {% else %}
     {{ pin.type }}
     {% endif %}
 </td>
-<td>{{ pin.state }}</td>
-<td>
+<td class="col-xs-1">{{ pin.state }}</td>
+<td class="col-xs-9">
 {% if pin.is_serial %}
     NA
 {% else %}
-
     <div class="type-in {% if pin.type != 'IN' %} hidden {% endif %} status-{{pin.number}}"> {% if pin.state %} <i class="icon-chevron-up"></i>  {% else %} <i class="icon-circle-blank"></i> {% endif %} </div>
     <div class="type-out {% if pin.type != 'OUT' %} hidden {% endif %} status-{{pin.number}}"><input class="pwm-slider" id="value-{{ pin.number }}" data-slider-id='pin{{ pin.number }}slider' type="text" data-slider-min="{{pin.min}}" data-slider-max="{{pin.max}}" data-slider-step="1" data-width='10' data-slider-value="{{pin.value}}"/></div>
 {% endif %}
@@ -41,44 +40,9 @@
 {% block extrascripts %}
 <script type="text/javascript">
 
-
-    $(".type-switch").bootstrapSwitch()
-
-    $(".type-switch").on('switchChange.bootstrapSwitch', function(event, state) {
-        var pin = parseInt(this.id.split("-")[1],10);
-        $(".status-"+pin).toggleClass("hidden")
-        var new_type = state ? "in" : "out";
-        $.ajax({
-                url: '/pinner/' + pin + '/set_type/' + new_type,
-                tryCount : 0,
-                retryLimit : 2,
-                error : function(xhr, textStatus, errorThrown ) {
-                        if (xhr.status == 301) {
-                            this.tryCount++;
-                            if (this.tryCount <= this.retryLimit) {
-                                //try again
-                                $.ajax(this);
-                                return;
-                            }
-                            return;
-                        }  else {
-                            console.log("no love")
-                        }
-                    },
-                success: function(data) {
-                  console.log("pin" + pin + " now type " + new_type)
-            }
-        });
-
-    });
-
-    // With JQuery
-    $('.pwm-slider').slider({
-        formatter: function(value) {
-            return 'Duty: ' + value + "%";
-        }})
-
-    $('.pwm-slider').on("slide", function (duty) {
+function onslide(duty) {
+    dute = duty.newValue;
+    if (this.id) {
         var pin = parseInt(this.id.split("-")[1],10);
         var duty = parseInt(this.value, 10);
         $.ajax({
@@ -104,7 +68,35 @@
             }
 
         });
+    }
+    }
+
+    $(".type-switch").bootstrapSwitch()
+    $(".type-switch").show()
+
+    $(".type-switch").on('switchChange.bootstrapSwitch', function(event, state) {
+        if (this.id) {
+            var pin = parseInt(this.id.split("-")[1],10);
+            $(".status-"+pin).toggleClass("hidden")
+            $("#value-"+pin).slider('setValue', 0)
+            var new_type = state ? "in" : "out";
+            $.ajax({
+                    url: '/pinner/' + pin + '/set_type/' + new_type,
+                    success: function(data) {
+                      console.log("pin" + pin + " now type " + new_type)
+                }
+            });
+        }
     });
+
+    // With JQuery
+    $('.pwm-slider').slider({
+        formatter: function(value) {
+            return 'Duty: ' + value + "%";
+        }})
+
+    $('.pwm-slider').on("slide", onslide);
+    $('.pwm-slider').on("slideStop", onslide);
 
 
 </script>
