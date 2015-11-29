@@ -3,3 +3,7 @@ django
 celery
 django-debug-toolbar
 ipython
+
+suds-jurko
+beautifulsoup4
+robobrowser

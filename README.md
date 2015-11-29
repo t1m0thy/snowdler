@@ -56,3 +56,8 @@ and paste the following in
 Then reboot with sudo reboot
 
 more info here: https://rtl8192cu.googlecode.com/hg/document/HowTo_enable_the_power_saving_functionality.pdf
+
+
+## for dev env:
+sudo apt-get remove python3-pip
+sudo easy_install3 pip
