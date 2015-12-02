@@ -16,8 +16,10 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 import pinner.urls
+import snotelchecker.urls
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^pinner/', include(pinner.urls)),
+    url(r'^snotel/', include(snotelchecker.urls))
 ]

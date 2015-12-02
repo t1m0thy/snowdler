@@ -63,3 +63,4 @@ target/
 ._*
 snowdlerweb/static/
 *.DS_Store
+db.sqlite3
